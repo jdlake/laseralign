@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -40,6 +43,16 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
+        <widget class="QGraphicsView" name="graphicsView">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>256</width>
+           <height>192</height>
+          </rect>
+         </property>
+        </widget>
        </widget>
       </item>
       <item>
@@ -53,45 +66,62 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="1" column="2">
-           <widget class="QLabel" name="yDis">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label_10">
-            <property name="text">
-             <string>X distance</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_11">
-            <property name="text">
-             <string>Y distance</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
+          <item row="1" column="0">
            <widget class="QLabel" name="label_9">
             <property name="text">
              <string>Total Distance</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="totalDis">
+          <item row="2" column="2">
+           <widget class="QLabel" name="yDis">
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="xDis">
             <property name="text">
              <string>TextLabel</string>
             </property>
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QLabel" name="xDis">
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>X distance</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="totalDis">
             <property name="text">
              <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="label_11">
+            <property name="text">
+             <string>Y distance</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="ExitButton">
+            <property name="text">
+             <string>Exit (ctrl + Q)</string>
+            </property>
+            <property name="shortcut">
+             <string>Ctrl+Q</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="closeCamButton">
+            <property name="text">
+             <string>Close camera</string>
             </property>
            </widget>
           </item>
@@ -207,7 +237,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>

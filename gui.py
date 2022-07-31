@@ -10,7 +10,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        MainWindow.setObjectName("Jamie's Alignment Helper")
         MainWindow.resize(1010, 698)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -126,7 +126,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("Jamie's Alignment Helper", "Jamie's Alignment Helper"))
         self.yDis.setText(_translate("MainWindow", "TextLabel"))
         self.label_10.setText(_translate("MainWindow", "X distance"))
         self.label_11.setText(_translate("MainWindow", "Y distance"))
