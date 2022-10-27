@@ -25,7 +25,7 @@ class LiveViewCanvas(tk.Canvas):
         self.image_queue = image_queue
         self._image_height, self._image_width = 0, 0
         x_, y_ = 0, 0 
-        self._temp_height, self._temp_width = 1080, 1920
+        self._temp_height, self._temp_width = int(1080*0.9895833), 1900
         tk.Canvas.__init__(self, parent)
         self.create_line(self._temp_width/2,0,self._temp_width/2,self._temp_height, fill="green", width=1)
         self.create_line(0, (self._temp_height)/2, self._temp_width, (self._temp_height)/2, fill="green", width=1)
@@ -36,6 +36,8 @@ class LiveViewCanvas(tk.Canvas):
                          self._temp_height / 2 + 100, outline="green", width=1)
         self.create_oval(self._temp_width / 2 - 180, self._temp_height / 2 - 180, self._temp_width / 2 + 180,
                          self._temp_height / 2 + 180, outline="green", width=1)
+        self.create_oval(self._temp_width / 2 - 480, self._temp_height / 2 - 480, self._temp_width / 2 + 480,
+                         self._temp_height / 2 + 480, outline="green", width=1)
         self.alignmark = self.create_oval(x_,y_,x_,y_, outline='red', width=1)
         self.pack()
         self._get_image()
@@ -48,31 +50,40 @@ class LiveViewCanvas(tk.Canvas):
         return (_XX * _YY * r).sum()
 
     def centroid(self, imagearray):
-        _, bin_img = cv.threshold(imagearray, 25, 225, 0)
+        _, bin_img = cv.threshold(imagearray,254, 225, cv.THRESH_TOZERO)
         moments = cv.moments(bin_img)
         #moments = cv.moments(imagearray)
         if moments['m00'] == 0:
             x_, y_ = 0, 0 
         else:
             x_, y_ = (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00']))
-        return x_, y_
+        return x_, y_, bin_img
 
 
     def _get_image(self):
         try:
             image = self.image_queue.get_nowait()
-            image = image.resize((1920  ,   1080))
+            image = image.resize((1900  ,   int(1080*0.9895833)))
             imagearray = np.array(image)
-            x_, y_ = self.centroid(imagearray)
+            x_, y_, bin_img = self.centroid(imagearray)
             self._image = ImageTk.PhotoImage(master=self, image=image)
+            bin_img = Image.fromarray(bin_img)
+            self._bin_image = ImageTk.PhotoImage(master=self, image=bin_img)
             if (self._image.width() != self._image_width) or (self._image.height() != self._image_height):
                 # resize the canvas to match the new image size
                 self._image_width = self._image.width()
                 self._image_height = self._image.height()
                 self.config(width=self._image_width, height=self._image_height)
-            self.tkimage = self.create_image(0, 0, image=self._image, anchor='nw')
+            self.tkimage = self.create_image(0, 0, image=self._bin_image, anchor='nw')
             self.lower(self.tkimage)
-            self.coords(self.alignmark, x_-2.5,y_-2.5,x_+2.5,y_+2.5)
+            self.coords(self.alignmark, x_-5,y_-5,x_+5,y_+5)
+            stamp = int(time.perf_counter()*1000)
+            file = open("data260722dl125stagereplace.txt", "a")
+            xdelta, ydelta, tdelta = abs((1900/2)-x_), abs(int(1080*0.9895833)/2-y_), stamp-starttime
+            file.write(f"{stamp} \t {xdelta} \t {ydelta} \t {np.sqrt(xdelta**2+ydelta**2)} \n")
+            print(xdelta, ydelta, tdelta)
+            if tdelta >= 3600000:
+                root.quit()
         except queue.Empty:
             pass
         self.after(16, self._get_image)
@@ -121,6 +132,11 @@ if __name__ == "__main__":
     with TLCameraSDK() as sdk:
         camera_list = sdk.discover_available_cameras()
         with sdk.open_camera(camera_list[0]) as camera:
+            file = open("data260722dl125stagereplace.txt", "w+")
+            header = "time \t x \t y \t cartdist\n"
+            file.write(header)
+            file.close()
+            starttime = int(time.perf_counter()*1000)
             root = tk.Tk()
             root.title("Jamie's alignment app")
             image_acquisition_thread = ImageAcquisitionThread(camera)
@@ -128,7 +144,11 @@ if __name__ == "__main__":
             camera.frames_per_trigger_zero_for_unlimited = 0
             camera.arm(2)
             camera.issue_software_trigger()
-            camera.exposure_time_us = int(4500)
+            #camera.exposure_time_us = int(2000) # random
+            camera.exposure_time_us = int(2000) # entrance
+            #camera.exposure_time_us = int(4000) # pump
+            #camera.exposure_time_us = int(6000) # thz
+            #camera.exposure_time_us = int(12000) # gate
             time.sleep(0.3)
             image_acquisition_thread.start()
 
@@ -136,4 +156,5 @@ if __name__ == "__main__":
             
             image_acquisition_thread.stop()
             image_acquisition_thread.join()
+            file.close()
 
